@@ -1,0 +1,11 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: self-signed
+  annotations:
+    # deploy after the cert-manager CRDs
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  selfSigned: {}
+
