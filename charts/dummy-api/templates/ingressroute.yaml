@@ -23,7 +23,7 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: selfsigned-cert
+  name: "selfsigned-{{ include "dummy-api.fullname" . }}"
 spec:
   dnsNames:
     - {{ .Values.traefik.subdomain }}.127.0.0.1.nip.io
