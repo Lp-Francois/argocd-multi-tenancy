@@ -12,8 +12,7 @@ kind create cluster --wait 5m --config=./scripts/kind/kind-config.yaml
 
 # bootstrap argocd on the cluster
 ./scripts/bootstrap.sh --cluster=local
-
-# Note: I only tested on Mac with docker desktop 😁
+# follow the instructions to get the argocd password and the URL
 ```
 
 ## Commands 💻
