@@ -40,6 +40,10 @@ service:
   type: ClusterIP
   port: 80
 
+traefik: 
+  enabled: false
+  subdomain: hello
+
 ingress:
   enabled: false
   className: ""

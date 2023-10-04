@@ -1,0 +1,35 @@
+{{- if .Values.traefik.enabled -}}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "dummy-api.fullname" . }}
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`{{ .Values.traefik.subdomain }}.127.0.0.1.nip.io`)
+      kind: Rule
+      services:
+        - name: {{ include "dummy-api.fullname" . }}
+          port: {{ .Values.service.port }}
+  tls:
+    secretName: "cert-{{ include "dummy-api.fullname" . }}"
+    domains:
+      - main: {{ .Values.traefik.subdomain }}.127.0.0.1.nip.io
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-cert
+spec:
+  dnsNames:
+    - {{ .Values.traefik.subdomain }}.127.0.0.1.nip.io
+  secretName: "cert-{{ include "dummy-api.fullname" . }}"
+  issuerRef:
+    name: self-signed
+    kind: ClusterIssuer
+
+{{- end }}

@@ -1,1 +1,7 @@
+# app configuration
 helmChartPath: charts/dummy-api
+
+# helm values
+traefik: 
+  enabled: true
+  subdomain: nginx

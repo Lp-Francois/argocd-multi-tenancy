@@ -6,3 +6,6 @@ image:
   repository: traefik/whoami
   tag: latest
 
+traefik: 
+  enabled: true
+  subdomain: whoami

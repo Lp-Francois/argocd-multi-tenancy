@@ -1,0 +1,38 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: infrastructure 
+
+  ignoreDifferences:
+  - group: argoproj.io
+    jsonPointers:
+    - /status
+    kind: Application
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+
+  source:
+    # https://cert-manager.io/docs/installation/helm/
+    # https://github.com/cert-manager/cert-manager/tree/master/deploy/charts/cert-manager
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: 1.13.1
+    helm:
+      valuesObject:
+        installCRDs: true
+        prometheus:
+          enabled: false
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: cert-manager
