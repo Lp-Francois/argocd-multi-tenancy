@@ -53,12 +53,15 @@ spec:
             ignoreMissingValueFiles: true
             valueFiles:
               - "values.local.yaml"
-              - "$values/{{ .path.path }}/deploy.yaml"
+              ## only use if deploy is in another repo (let's say for a monorepo)
+              # - "$values/{{ .path.path }}/deploy.yaml"
+              - "../../{{ .path.path }}/deploy.yaml"
 
-        - repoURL: 'https://github.com/Lp-Francois/argocd-multi-tenancy.git'
-          targetRevision: HEAD
-          # resolves to the root of the repo
-          ref: values
+          ## only use for another repo (let's say for a monorepo)
+        # - repoURL: 'https://github.com/Lp-Francois/argocd-multi-tenancy.git'
+        #   targetRevision: HEAD
+        #   # resolves to the root of the repo
+        #   ref: values
 
       project: development
       syncPolicy:
