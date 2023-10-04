@@ -1,4 +1,8 @@
-# Kubernetes Infrastructure with ArgoCD for multi-tenant 🐙☸️
+# Kubernetes infrastructure with ArgoCD 🐙☸️
+
+Include multi-tenancy, local setup, bootstrap script and more.
+
+![Argo dashboard](./docs/pics/argo-in-local.png)
 
 ## Getting started 🚀
 
