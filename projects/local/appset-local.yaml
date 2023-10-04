@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  annotations:
+    argocd-autopilot.argoproj-labs.io/default-dest-server: https://kubernetes.default.svc
+    argocd.argoproj.io/sync-options: PruneLast=true
+    argocd.argoproj.io/sync-wave: "-20"
+  creationTimestamp: null
+  name: development
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  description: Development project
+  destinations:
+  - namespace: '*'
+    server: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  sourceRepos:
+  - '*'
+status: {}
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev-micro-services
+  namespace: argocd
+spec:
+  goTemplate: true
+  # goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        files:
+          - path: apps/**/deploy.y*ml
+        repoURL: https://github.com/Lp-Francois/argocd-multi-tenancy.git
+        revision: 'HEAD'
+  template:
+    metadata:
+      name: "dev-{{ default .path.basenameNormalized .appName }}"
+    spec:
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'development'
+      sources:
+        - repoURL: "{{ default \"https://github.com/Lp-Francois/argocd-multi-tenancy.git\" .srcRepoURL  }}"
+          targetRevision: 'HEAD'
+          path: "{{ .helmChartPath }}"
+          helm:
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - "values.staging.yaml"
+              - "$values/{{ .path.path }}/deploy.yaml"
+
+        - repoURL: 'https://github.com/Lp-Francois/argocd-multi-tenancy.git'
+          targetRevision: HEAD
+          # resolves to the root of the repo
+          ref: values
+
+      project: development
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true  
+        automated:
+          prune: true
+          selfHeal: true
+
+---

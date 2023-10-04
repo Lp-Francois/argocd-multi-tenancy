@@ -1,0 +1,7 @@
+# overrides values.yaml with custom values for local environment
+
+autoscaling:
+  enabled: false
+
+ingress:
+  enabled: false
