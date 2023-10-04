@@ -26,8 +26,10 @@ kind create cluster --wait 5m --config=./scripts/kind/kind-config.yaml
 
 ## Inspirations
 
-Repo to show some ideas on how to deploy infrastructure & apps in a gitops fashion, with ArgoCD.
+Cool github repos that helped to find a nice structure:
 
 - https://github.com/fluxcd/flux2-multi-tenancy
 - https://github.com/kostis-codefresh/gitops-environment-promotion
 - https://github.com/argoproj-labs/argocd-autopilot
+
+Of course, adapt the structure to your organization... #ConwaysLaw
