@@ -1,0 +1,38 @@
+# Use kustomization at https://github.com/argoproj-labs/argocd-autopilot/blob/v0.4.15/manifests/base/kustomization.yaml
+# to be able to use a custom argocd install manifests version
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd
+resources:
+  - namespace-argocd.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.4/manifests/install.yaml
+
+
+############################################
+# configuration from argocd autopilot
+# https://github.com/argoproj-labs/argocd-autopilot/blob/v0.4.15/manifests/base/kustomization.yaml
+configMapGenerator:
+  - name: argocd-cm
+    behavior: merge
+    literals:
+      - "timeout.reconciliation=15s"
+      # The metadata.label key name where Argo CD injects the app name as a tracking label (optional).
+      # Tracking labels are used to determine which resources need to be deleted when pruning.
+      # If omitted, Argo CD injects the app name into the label: 'app.kubernetes.io/instance'
+      # https://argo-cd.readthedocs.io/en/stable/faq/#why-is-my-app-out-of-sync-even-after-syncing
+      # Note: it caused a bug with traefik, cause the helm chart used the label with Release + '-' + Namespace
+      # while argo was only using the Release name, causing the service monitor to not find the service
+      - "application.instanceLabelKey=argocd.argoproj.io/instance"  # Added according to ArgoCD best practices
+
+patches:
+  # reset the crbs to `subject.namespace: default`, so that argo-cd will later change them to the actual ns
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRoleBinding
+    patch: |-
+      - op: replace
+        path: /subjects/0/namespace
+        value: default
+############################################

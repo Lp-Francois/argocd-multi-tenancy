@@ -1,0 +1,54 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blackbox-exporter
+  namespace: argocd
+spec:
+  project: infrastructure
+
+  ignoreDifferences:
+  - group: argoproj.io
+    jsonPointers:
+    - /status
+    kind: Application
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+
+  source:
+    chart: prometheus-blackbox-exporter
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/values.yaml
+    repoURL: https://prometheus-community.github.io/helm-charts
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-blackbox-exporter/Chart.yaml
+    targetRevision: 8.4.0
+    helm:
+      valuesObject:
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            memory: 50Mi
+
+        serviceMonitor:
+          ## If true, a ServiceMonitor CRD is created for a prometheus operator
+          ## https://github.com/coreos/prometheus-operator for each target
+          # FIXME: but it doesn't seem to work currently :(
+          # a serviceMonitor targetting /probe is not created for each target
+          # maybe a problem coming from grafana agent?
+          # For now, I have to create the ServiceMonitor manually from the helm chart
+          # probably something to ask grafana how it works: ticket 
+          enabled: false
+          ## If true, a ServiceMonitor CRD is created for a prometheus operator
+          ## https://github.com/coreos/prometheus-operator for blackbox-exporter itself
+          selfMonitor:
+            enabled: false
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring

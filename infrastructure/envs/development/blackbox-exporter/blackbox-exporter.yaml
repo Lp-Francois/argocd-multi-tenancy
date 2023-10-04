@@ -1,0 +1,12 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blackbox-exporter
+  namespace: argocd
+spec:
+  source:
+    helm:
+      valuesObject:
+        extraArgs:
+          - "--log.level=debug"

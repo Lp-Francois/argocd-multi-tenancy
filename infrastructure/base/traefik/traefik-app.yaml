@@ -1,0 +1,105 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: infrastructure 
+
+  ignoreDifferences:
+  - group: argoproj.io
+    jsonPointers:
+    - /status
+    kind: Application
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: traefik
+    
+  source:
+    chart: traefik
+    repoURL: https://helm.traefik.io/traefik
+    targetRevision: 24.0.0
+    
+    helm: 
+      # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+      valuesObject:
+        # ports:
+          # web:
+            # redirectTo: websecure   # (optional) Permanent Redirect to HTTPS
+            # forwardedHeaders:       # Trust forwarded  headers information (X-Forwarded-*).
+            #   insecure: true
+            # proxyProtocol:          # Enable the Proxy Protocol header parsing for the entry point
+            #   insecure: true
+          # websecure:
+          #   forwardedHeaders:
+          #     insecure: true
+          #   proxyProtocol:
+          #     insecure: true
+          #   tls:
+          #     enabled: true
+
+        resources:
+          requests:
+            cpu: 0.1
+            memory: "150Mi"
+          limits:
+            memory: "200Mi"
+
+        # only for debugging
+        logs:
+          general:
+            level: INFO
+
+        # Using affinity from Traefik default values example
+        # This pod anti-affinity forces the scheduler to put traefik pods
+        # on nodes where no other traefik pods are scheduled.
+        # It should be used when hostNetwork: true to prevent port conflicts
+        # affinity:
+        #   podAntiAffinity:
+        #     requiredDuringSchedulingIgnoredDuringExecution:
+        #     - topologyKey: topology.kubernetes.io/region
+        #       labelSelector:
+        #         matchExpressions:
+        #         - key: app
+        #           operator: In
+        #           values: 
+        #           - traefik
+
+        ingressRoute:
+          dashboard:
+            enabled: true 
+            annotations:
+              kubernetes.io/ingress.class: 'traefik'
+
+        ### Disable as cert-manager handles certs
+        persistence:
+          enabled: false
+
+        # service:
+        #   annotations:
+        #     # This will tell DigitalOcean to enable the proxy protocol so we can get the client real IP.
+        #     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+        #   spec: 
+        #     externalTrafficPolicy: Cluster # default
+
+        deployment:
+          replicas: 1
+        # podDisruptionBudget:
+        #   enabled: true
+        #   minAvailable: 1
+
+        # Set Traefik as your default Ingress Controller, according to Kubernetes 1.19x changes
+        ingressClass:
+          enabled: true
+          isDefaultClass: true
+

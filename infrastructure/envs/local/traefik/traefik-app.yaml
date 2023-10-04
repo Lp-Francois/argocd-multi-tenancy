@@ -1,0 +1,51 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-chart
+  namespace: argocd
+spec:
+  source:
+    targetRevision: 24.0.0
+    helm:
+      valuesObject:
+        resources: {}
+
+        ingressClass:
+          enabled: true
+
+        service:
+          type: NodePort
+
+        ports:
+          web:
+            nodePort: 30000
+          websecure:
+            nodePort: 30001
+
+        nodeSelector:
+          ingress-ready: 'true'
+
+        tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Equal
+            effect: NoSchedule
+          - key: node-role.kubernetes.io/control-plane
+            operator: Equal
+            effect: NoSchedule
+
+        logs:
+          general:
+            level: INFO
+
+        ingressRoute:
+          dashboard:
+            # -- The router match rule used for the dashboard ingressRoute
+            matchRule: Host(`traefik.127.0.0.1.nip.io`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+            # -- Specify the allowed entrypoints to use for the dashboard ingress route, (e.g. traefik, web, websecure).
+            # By default, it's using traefik entrypoint, which is not exposed.
+            # /!\ Do not expose your dashboard without any protection over the internet /!\
+            entryPoints: ["web"]
+            # -- TLS options (e.g. secret containing certificate)
+            tls: {}
+

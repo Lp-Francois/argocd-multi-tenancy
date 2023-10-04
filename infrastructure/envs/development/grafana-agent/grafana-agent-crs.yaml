@@ -1,0 +1,11 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-agent-crs
+  namespace: argocd
+spec:
+  source:
+    helm:
+      valueFiles:
+        - "values-staging.yaml"

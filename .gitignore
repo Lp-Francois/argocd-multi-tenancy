@@ -1,0 +1,7 @@
+.env
+aws-credentials.txt
+
+debug
+unsealed
+
+*.key

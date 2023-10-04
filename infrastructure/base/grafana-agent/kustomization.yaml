@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - grafana-agent-operator.yaml
+
+  ## here you could add custom resources in a private helm chart / kustomize folder,
+  ## to install MetricsInstance, GrafanaAgent, etc
+  # - grafana-agent-crs.yaml
+
+# patches:
+#   - path: grafana-agent-crs.yaml

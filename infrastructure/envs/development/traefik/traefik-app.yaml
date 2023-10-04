@@ -1,0 +1,53 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  source:
+    targetRevision: 24.0.0
+    helm:
+      valuesObject:
+        logs:
+          access:
+            # -- To enable access logs
+            enabled: true
+          general:
+            level: DEBUG
+        # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+        metrics:
+          prometheus:
+            # -- Entry point used to expose metrics.
+            entryPoint: metrics
+            ## Enable metrics on entry points. Default=true
+            addEntryPointsLabels: true
+            ## Enable metrics on routers. Default=false
+            addRoutersLabels: true
+            ## Enable metrics on services. Default=true
+            addServicesLabels: true
+            ## Buckets for latency metrics. Default="0.1,0.3,1.2,5.0"
+            buckets: "0.5,1.0,2.5"
+            ## When manualRouting is true, it disables the default internal router in
+            ## order to allow creating a custom router for prometheus@internal service.
+            # manualRouting: true
+            
+            ## Create a dedicated metrics service for use with ServiceMonitor
+            service:
+              enabled: true
+            serviceMonitor:
+              relabelings:
+                - sourceLabels: [__meta_kubernetes_pod_node_name]
+                  separator: ;
+                  regex: ^(.*)$
+                  targetLabel: nodename
+                  replacement: $1
+                  action: replace
+        
+    #     replicas: 2
+    #     resources:
+    #       requests:
+    #         cpu: 0.1
+    #         memory: "300Mi"
+    #       limits:
+    #         memory: "500Mi"

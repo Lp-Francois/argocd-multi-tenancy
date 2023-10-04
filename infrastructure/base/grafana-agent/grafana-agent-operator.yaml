@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-agent-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  project: infrastructure 
+
+  ignoreDifferences:
+  - group: argoproj.io
+    jsonPointers:
+    - /status
+    kind: Application
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      # Need server side apply because the resource is too big to fit in 262144 bytes allowed annotation size
+      # https://github.com/grafana/agent/issues/4379
+      - ServerSideApply=true
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+
+  source:
+    # https://github.com/grafana/helm-charts/tree/main/charts/agent-operator
+    chart: grafana-agent-operator
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 0.3.5
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: grafana-agent
