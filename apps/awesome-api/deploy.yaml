@@ -1,0 +1,6 @@
+# app configuration
+helmChartPath: charts/dummy-api
+
+# helm values
+image:
+  repository: traefik/whoami
