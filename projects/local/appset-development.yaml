@@ -52,7 +52,7 @@ spec:
           helm:
             ignoreMissingValueFiles: true
             valueFiles:
-              - "values.staging.yaml"
+              - "values.local.yaml"
               - "$values/{{ .path.path }}/deploy.yaml"
 
         - repoURL: 'https://github.com/Lp-Francois/argocd-multi-tenancy.git'

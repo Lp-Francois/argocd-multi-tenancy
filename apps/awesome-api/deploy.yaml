@@ -4,3 +4,5 @@ helmChartPath: charts/dummy-api
 # helm values
 image:
   repository: traefik/whoami
+  tag: latest
+

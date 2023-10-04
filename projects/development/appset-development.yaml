@@ -24,5 +24,48 @@ spec:
 status: {}
 
 ---
-## here you could create a "development" applicationset
-## deploying micro-services
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev-micro-services
+  namespace: argocd
+spec:
+  goTemplate: true
+  # goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        files:
+          - path: apps/**/deploy.y*ml
+        repoURL: https://github.com/Lp-Francois/argocd-multi-tenancy.git
+        revision: 'HEAD'
+  template:
+    metadata:
+      name: "dev-{{ default .path.basenameNormalized .appName }}"
+    spec:
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'development'
+      sources:
+        - repoURL: "{{ default \"https://github.com/Lp-Francois/argocd-multi-tenancy.git\" .srcRepoURL  }}"
+          targetRevision: 'HEAD'
+          path: "{{ .helmChartPath }}"
+          helm:
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - "values.local.yaml"
+              - "$values/{{ .path.path }}/deploy.yaml"
+
+        - repoURL: 'https://github.com/Lp-Francois/argocd-multi-tenancy.git'
+          targetRevision: HEAD
+          # resolves to the root of the repo
+          ref: values
+
+      project: development
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true  
+        automated:
+          prune: true
+          selfHeal: true
+
+---
