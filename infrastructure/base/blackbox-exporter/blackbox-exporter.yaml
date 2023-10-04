@@ -29,25 +29,7 @@ spec:
     targetRevision: 8.4.0
     helm:
       valuesObject:
-        resources:
-          limits:
-            memory: 200Mi
-          requests:
-            memory: 50Mi
-
-        serviceMonitor:
-          ## If true, a ServiceMonitor CRD is created for a prometheus operator
-          ## https://github.com/coreos/prometheus-operator for each target
-          # FIXME: but it doesn't seem to work currently :(
-          # a serviceMonitor targetting /probe is not created for each target
-          # maybe a problem coming from grafana agent?
-          # For now, I have to create the ServiceMonitor manually from the helm chart
-          # probably something to ask grafana how it works: ticket 
-          enabled: false
-          ## If true, a ServiceMonitor CRD is created for a prometheus operator
-          ## https://github.com/coreos/prometheus-operator for blackbox-exporter itself
-          selfMonitor:
-            enabled: false
+        resources: {}
 
   destination:
     server: "https://kubernetes.default.svc"
