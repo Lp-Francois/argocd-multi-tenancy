@@ -1,0 +1,11 @@
+# ingressRoute from traefik
+{{ if .Values.ingressRoute.enabled -}}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.ingressRoute.name }}
+  namespace: {{ .Values.ingressRoute.namespace }}
+spec:
+
+{{ end }}

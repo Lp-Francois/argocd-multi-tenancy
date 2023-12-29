@@ -1,0 +1,14 @@
+
+project: infrastructure
+
+chartVersion: 2.13.0
+repoUrl: https://bitnami-labs.github.io/sealed-secrets
+
+sealedSecret:
+  valueFile: values.local.yaml
+
+sealedSecretCrds:
+  enabled: true
+
+ingressRoute:
+  enabled: false

@@ -1,0 +1,20 @@
+# argo Config
+helmChartPath: charts/sealed-secret
+
+
+## Helm config
+project: infrastructure
+
+chartVersion: 3.13.0
+repoUrl: https://bitnami-labs.github.io/sealed-secrets
+
+sealedSecret:
+  hello: there
+  options:  
+    hello: there
+
+sealedSecretCrds:
+  enabled: true
+
+ingressRoute:
+  enabled: true
